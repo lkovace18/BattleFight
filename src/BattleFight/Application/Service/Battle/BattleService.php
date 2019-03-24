@@ -2,10 +2,15 @@
 
 namespace BattleFight\Application\Service\Battle;
 
+use BattleFight\Application\Service\Utility\ChanceService;
+use BattleFight\Domain\Army\Army;
 use BattleFight\Domain\Army\ArmyInterface;
 use BattleFight\Domain\Battle\Battle;
 use BattleFight\Domain\Battlefield\BattlefieldInterface;
+use BattleFight\Domain\Modifier\Modifier;
+use BattleFight\Domain\Modifier\ModifierCollection;
 use BattleFight\Domain\Modifier\ModifierInterface;
+use BattleFight\Domain\Unit\UnitInterface;
 
 /**
  * Class BattleService
@@ -16,6 +21,9 @@ class BattleService
     /** @var RoundService */
     private $roundService;
 
+    /** @var ChanceService */
+    private $chanceService;
+
     /**
      * BattleService constructor.
      *
@@ -24,6 +32,7 @@ class BattleService
     public function __construct(RoundService $roundService)
     {
         $this->roundService = $roundService;
+        $this->chanceService = new ChanceService();
     }
 
     /**
@@ -43,6 +52,8 @@ class BattleService
 
         $battle = new Battle($battlefield, $attackingArmy, $defendingArmy, $modifiers);
 
+        $this->applyPreBattleModifiers($battle->getModifiers());
+
         while ($battle->isFinished() === false) {
 
             $this->resolveRound($battle);
@@ -53,6 +64,48 @@ class BattleService
         }
 
         return $battle;
+    }
+
+    /**
+     * @param ModifierCollection $modifiers
+     * @param Battle $battle
+     *
+     * @return Battle
+     */
+    private function applyPreBattleModifiers(ModifierCollection $modifiers, Battle $battle): Battle
+    {
+        while ($modifier = $modifiers->current() !== false) {
+
+            if($this->chanceService($modifier->getChance())) {
+                $this->applyModifier($modifier, $battle);
+            }
+
+            $modifiers->next();
+        }
+
+        return $battle;
+    }
+
+    /**
+     * @param Modifier $modifier
+     * @param Army $army
+     */
+    private function applyModifier(Modifier $modifier, Army $army): void
+    {
+        $units = $army->getUnits();
+
+        while ($unit = $units->current() !== false) {
+
+            if ($modifier->getAffectType() === Modifier::HEALTH_MODIFIER) {
+                $unit->reduceHealth($modifier->getModifyValue());
+
+            } elseif ($modifier->getAffectType() === Modifier::DAMAGE_MODIFIER) {
+                $unit->reduceAttack($modifier->getModifyValue());
+            }
+
+
+            $units->next();
+        }
     }
 
     /**

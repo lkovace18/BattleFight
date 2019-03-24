@@ -28,7 +28,7 @@ class Battle implements BattleInterface
     /** @var ArmyInterface */
     private $defendingArmy;
 
-    /** @var ModifierInterface */
+    /** @var ModifierCollection */
     private $modifiers;
 
     /** @var bool */
@@ -52,7 +52,7 @@ class Battle implements BattleInterface
         BattlefieldInterface $battlefield,
         ArmyInterface $attackingArmy,
         ArmyInterface $defendingArmy,
-        ModifierInterface $modifiers
+        ModifierCollection $modifiers
     ) {
         $this->uuid = $this->generateUuid();
 
@@ -132,5 +132,13 @@ class Battle implements BattleInterface
     public function getDetails(): BattleDetails
     {
         return $this->details;
+    }
+
+    /**
+     * @return ModifierCollection
+     */
+    public function getModifiers(): ModifierCollection
+    {
+        return $this->modifiers;
     }
 }
