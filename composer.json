@@ -1,0 +1,49 @@
+{
+    "name": "luka/battlefight",
+    "authors": [
+        {
+            "name": "Luka Kovacevic",
+            "email": "luka.kovacevic.jr@gmail.com"
+        }
+    ],
+    "autoload":{
+        "psr-4":{
+            "BattleFight\\": "src/BattleFight"
+        }
+    },
+    "autoload-dev":{
+        "psr-4":{
+            "BattleFight\\Test\\": "test/src/BattleFight"
+        }
+    },
+    "require": {
+        "php": ">=7.1",
+      "ext-openssl": "*"
+    },
+    "require-dev": {
+        "phpmd/phpmd": "^2.6",
+        "phpunit/phpunit": "^8.0",
+        "sebastian/phpcpd": "^4.1",
+        "phpstan/phpstan": "^0.11.4"
+    },
+    "scripts": {
+        "stan": "vendor/bin/phpstan analyse --level max src test",
+        "unit": "phpunit --colors=always",
+        "uf": "phpunit --filter=",
+        "lint": [
+            "find src -name '*.php' -print0 | xargs -0 -n1 php -l",
+            "find test -name '*.php' -print0 | xargs -0 -n1 php -l"
+        ],
+        "test": [
+            "@unit",
+            "@stan"
+        ]
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true,
+        "platform": {
+            "php": "7.2.15"
+        }
+    }
+}
