@@ -12,6 +12,7 @@ use BattleFight\Domain\Army\ArmyInterface;
 use BattleFight\Domain\Battle\Battle;
 use BattleFight\Domain\Battlefield\Battlefield;
 use BattleFight\Domain\Modifier\Modifier;
+use BattleFight\Domain\Modifier\ModifierCollection;
 use BattleFight\Domain\Unit\Type\MedicType;
 use BattleFight\Domain\Unit\Type\SoldierType;
 use InvalidArgumentException;
@@ -104,6 +105,26 @@ class BattleFight
         ];
     }
 
+    private function loadModifiers(): ModifierCollection
+    {
+        return new ModifierCollection([
+            new Modifier( // @todo this should be collection of modifiers
+                Modifier::BATTLEFIELD_MODIFIER_TYPE,
+                Modifier::HEALTH_MODIFIER,
+                'tsunami',
+                1000,
+                3
+            ),
+            new Modifier( // @todo this should be collection of modifiers
+                Modifier::BATTLEFIELD_MODIFIER_TYPE,
+                Modifier::HEALTH_MODIFIER,
+                'virus',
+                30,
+                40
+            )
+        ]);
+    }
+
     /**
      * @return array
      * @throws Domain\Exception\ArmorTypeException
@@ -141,13 +162,7 @@ class BattleFight
             new Battlefield(),
             $this->createRandomArmyFromSize($attackingUnitCount),
             $this->createRandomArmyFromSize($defendingUnitCount),
-            new Modifier( // @todo this should be collection of modifiers
-                Modifier::BATTLEFIELD_MODIFIER_TYPE,
-                Modifier::HEALTH_MODIFIER,
-                'tsunami',
-                1000,
-                3
-            )
+            $this->loadModifiers()
         );
 
         return $battle;
